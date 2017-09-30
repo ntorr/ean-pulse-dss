@@ -1,0 +1,12 @@
+{
+  "train": {
+    "columns": ["observation", "previous_anomalies"],
+    "data": [[0.1, 0], [0.1, 0], [0.1, 0], [0.2, 0]],
+    "index": [0, 1, 2, 3]
+  },
+  "score": {
+    "columns": ["observation"],
+    "data": [[1.0]],
+    "index": [4]
+  }
+}
