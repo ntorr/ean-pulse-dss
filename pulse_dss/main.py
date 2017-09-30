@@ -1,41 +1,45 @@
-import json
+import importlib
 import logging
-from flask import Flask, request, abort, jsonify
-from flask_restful import Api, Resource, reqparse
+import notebooks.utils as notebook_utils
+from flask import Flask, request, make_response
+from flask_restful import Api, Resource
 
-from pulse_dss.utils import validate_request_data, convert_to_df
+from pulse_dss.request_handler import validate_request_data, convert_dict_to_df, convert_df_to_json
 
 app = Flask(__name__)
 api = Api(app)
 
-logging.basicConfig(level='INFO')
+logging.basicConfig(level='DEBUG')
+logger = logging.getLogger(__file__)
 
 
 class Score(Resource):
-    def post(self):
+    @staticmethod
+    def post():
         data = validate_request_data(request)
         logging.info(data)
 
-        train = convert_to_df(data['train'])
-        score = convert_to_df(data['score'])
+        train = convert_dict_to_df(data['train'])
+        score = convert_dict_to_df(data['score'])
 
-        logging.info('train data \n%s' % str(train))
-        logging.info('score data \n%s' % str(score))
+        logger.info('train data \n%s' % str(train))
+        logger.info('score data \n%s' % str(score))
 
-        return jsonify('Success')
+        # collect notebook details
+        module_path = data['notebook']
+        logger.info('collecting notebook %s.%s' % (module_path, 'ipynb'))
+        logger.info('notebook_id = %s' % notebook_utils.hash_notebook(module_path))
+
+        # import notebook as module
+        nb_module = importlib.import_module(module_path)
+
+        # call execute method
+        result = nb_module.execute(train, score)
+
+        return make_response(convert_df_to_json(result))
 
 
 api.add_resource(Score, '/score')
-
-
-"""
-@app.route('/dss/test', methods=['POST'])
-def score():
-    logging.info('received data %s' % str(request.__dict__))
-    if not request.json:
-        abort(400)
-    return jsonify('Success')
-"""
 
 
 if __name__ == '__main__':

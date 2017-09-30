@@ -8,5 +8,6 @@
     "columns": ["observation"],
     "data": [[1.0]],
     "index": [4]
-  }
+  },
+  "notebook": "notebooks.user.example"
 }

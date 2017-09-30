@@ -2,6 +2,7 @@ import os
 import json
 import logging
 import requests
+import pandas as pd
 
 logging.basicConfig(level='INFO')
 
@@ -15,4 +16,11 @@ logging.info(data_as_json)
 
 r = requests.post('http://localhost:5000/score', data=data_as_json)
 
-logging.info(r)
+out = r.json()
+logging.info(out)
+
+js = json.dumps(out)
+logging.info(js)
+
+df = pd.read_json(js, orient='split')
+logging.info(df)
