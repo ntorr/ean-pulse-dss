@@ -1,0 +1,5 @@
+setuptools==35.0.2
+requests==2.18.4
+pandas==0.20.1
+Flask==0.12.2
+flask_restful==0.3.6
