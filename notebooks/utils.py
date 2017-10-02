@@ -21,7 +21,9 @@ def hash_notebook(module_name):
     char = str(file.readlines())
     char = re.sub('[\s+]', '', char)
     sha1 = hashlib.sha1(char.encode()).hexdigest()
-    logger.debug('hashing object string: \n%s \n%s' % (char, sha1))
+    logger.debug('hashing object string ...')
+    logger.debug('object string = %s' % char)
+    logger.debug('object hash = %s' % sha1)
     return sha1
 
 
