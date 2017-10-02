@@ -1,7 +1,8 @@
 
 # coding: utf-8
 
-# In[30]:
+# In[21]:
+
 
 """
 Always have this in the header of the Notebook
@@ -20,14 +21,15 @@ sys.path.append(resource_filename(__name__, ""))
 IN_JUPYTER = 'get_ipython' in globals() and get_ipython().__class__.__name__ == "ZMQInteractiveShell"
 
 
-# In[31]:
+# In[22]:
+
 
 """
 The execute function must be included in all notebooks that are to be run in production
 This allows Jupyter Notebooks to implement an abstracted execute() function
 It returns a Pandas DataFrame
 """
-def execute(train, score):
+def execute(train, score, config=None):
     logger.info('Calling notebook execute ...')
     logger.debug('Training data = %s' % str(train))
     logger.debug('Scoring data = %s' % str(score))
@@ -43,7 +45,8 @@ def execute(train, score):
     return merged.loc[[last_index]]
 
 
-# In[32]:
+# In[23]:
+
 
 """
 Below you can put code for testing, plotting and collecting local data whilst prototyping
