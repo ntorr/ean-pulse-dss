@@ -536,7 +536,7 @@
 #  enforcement (like some networked fs). If set to False, the new notebook is
 #  written directly on the old one which could fail (eg: full filesystem or quota
 #  )
-#c.FileManagerMixin.use_atomic_writing = True
+c.FileManagerMixin.use_atomic_writing = False
 
 #------------------------------------------------------------------------------
 # FileContentsManager(FileManagerMixin,ContentsManager) configuration

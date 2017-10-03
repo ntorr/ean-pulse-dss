@@ -27,7 +27,7 @@ The execute function must be included in all notebooks that are to be run in pro
 This allows Jupyter Notebooks to implement an abstracted execute() function
 It returns a Pandas DataFrame
 """
-def execute(train, score):
+def execute(train, score, config):
     logger.info('calling notebook execute')
     logger.debug('training data = %s' % str(train))
     logger.debug('scoring data = %s' % str(score))
