@@ -1,11 +1,47 @@
 ### Pulse DSS (Data-Science Scoring Service)
 
-**Idea**
+#### Idea
 
 To build a Data Science Scoring service that can deploy models, rules
 and custom algorithms for the purposes of anomaly detection in the
 guise of Jupyter Notebooks.
 
+### Notebooks
+
+**Running Jupyter Notebook Server**
+
+Simply run the following command in the base of the repository:
+```bash
+$ ./launch_notebook_server
+```
+This should open a new window with the server running on
+http://localhost:8888. From here you can navigate through the notebooks
+package, edit and save changes to notebooks.
+
+**Editing Notebooks**
+
+Remember the following when editing notebooks
+ -  All notebooks should follow the example given in
+    ean-pulse-dss/notebooks/user/example.ipynb
+ -  Notebook files are saved to .py files as well as .ipynb by default
+ - In the application, notebooks are simply treated as Python modules
+
+### The API
+
+**Running the Service**
+
+Ensure all prerequisites from requirements.txt are installed and then
+execute
+```bash
+$ python main.py
+```
+From here you can call POST to http://localhost:5000/score. To see a
+typical request shape then see example.json. All data should be given
+in a JSON format that can be interpreted by Pandas read_json() function
+with orient='split', see https://pandas.pydata.org/pandas-docs/stable/generated/pandas.read_json.html
+for further details.
+
+### Feedback
 
 **Pros**
 
