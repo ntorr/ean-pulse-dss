@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[21]:
 
 """
 Always have this in the header of the Notebook
@@ -27,7 +27,7 @@ The execute function must be included in all notebooks that are to be run in pro
 This allows Jupyter Notebooks to implement an abstracted execute() function
 It returns a Pandas DataFrame
 """
-def execute(train, score, config):
+def execute(train, score, config=None):
     logger.info('Calling notebook execute ...')
     logger.debug('Training data = %s' % str(train))
     logger.debug('Scoring data = %s' % str(score))
