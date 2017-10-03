@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[21]:
+# In[ ]:
 
 """
 Always have this in the header of the Notebook
@@ -20,7 +20,7 @@ sys.path.append(resource_filename(__name__, ""))
 IN_JUPYTER = 'get_ipython' in globals() and get_ipython().__class__.__name__ == "ZMQInteractiveShell"
 
 
-# In[22]:
+# In[ ]:
 
 """
 The execute function must be included in all notebooks that are to be run in production
@@ -32,18 +32,31 @@ def execute(train, score, config=None):
     logger.debug('Training data = %s' % str(train))
     logger.debug('Scoring data = %s' % str(score))
     
+    # imports
+    import pandas as pd
+    
+    # check input data and cut if needed
+    assert(len(train) >= config['lookback'])
+    train = train[-lookback:]
+    
     # compute median
     median = train['observation'].median()
-    merged = train.append(score, ignore_index=True)
-    last_index = merged.index[-1]
+
+    # compute std deviation on residuals
     train['residuals'] = train['observation'] - median
     std = train['residuals'].std()
-    merged.loc[last_index, 'anomaly'] = merged.loc[last_index, 'observation'] > 3.0 * std
+    n_sigma = config['n_sigma']
     
-    return merged.loc[[last_index]]
+    # decide if last point is anomalous
+    observation = score.ix[score.index[0], 'observation']
+    anomaly = int(abs(observation - median) > n_sigma * std)
+
+    # return result
+    return pd.DataFrame(index=score.index, columns=['observation', 'anomaly', 'median'], 
+                        data=[[observation, anomaly, median]])
 
 
-# In[23]:
+# In[ ]:
 
 """
 Below you can put code for testing, plotting and collecting local data whilst prototyping
@@ -51,19 +64,40 @@ Nesting in the condition means none of this code will be called in production
 """
 if IN_JUPYTER:
     # Place prototyping code here
-    import pandas as pd
+    logging.basicConfig(level='DEBUG')
     
-    train_cols = ['observation', 'anomaly']
-    train_data = [[1.0, 0], [1.1, 0], [10.0, 1], [1.0, 0], [0.8, 0]]
-    train_index = [1, 2, 3, 4, 5]
+    import pandas as pd
+    import numpy as np
+    import matplotlib.pyplot as plt
+    
+    conf = dict()
+    conf['n_sigma'] = 1.0
+    lookback = 30
+    conf['lookback'] = lookback
+    lookforward = 200
+    
+    train_cols = ['observation', 'anomaly', 'median']
+    train_data = [[np.random.normal(), None, None] for i in range(lookback)]
+    train_index = [i for i in range(lookback)]
     train = pd.DataFrame(data=train_data, columns=train_cols, index=train_index)
     
     score_cols = ['observation']
-    score_data = [[2.0]]
-    score_index = [6]
+    score_data = [[np.random.normal()] for i in range(lookforward)]
+    score_index = [i + lookback for i in range(lookforward)]
     score = pd.DataFrame(data=score_data, columns=score_cols, index=score_index)
     
-    print(execute(train, score))
+    for i in range(lookforward):
+        this_train = train[i:lookback + i]
+        this_score = score[i:i + 1]
+        result = execute(this_train, this_score, conf)
+        train = train.append(result, ignore_index=True)
+    
+    print('final results: \n%s' % train)
+    
+    train.plot(y=['observation', 'median'])
+    plt.show()
+    train.plot(y='anomaly')
+    plt.show()
     
     pass
 
