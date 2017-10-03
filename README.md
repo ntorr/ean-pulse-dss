@@ -1,6 +1,6 @@
-### Pulse DSS (Data-Science Scoring Service)
+## Pulse DSS (Data-Science Scoring Service)
 
-#### Idea
+### Idea
 
 To build a Data Science Scoring service that can deploy models, rules
 and custom algorithms for the purposes of anomaly detection in the
