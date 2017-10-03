@@ -1,6 +1,7 @@
 import importlib
 import logging
 import notebooks.utils as notebook_utils
+from pulse_dss.config import Config
 from flask import Flask, request, make_response
 from flask_restful import Api, Resource
 
@@ -26,8 +27,11 @@ class Score(Resource):
         logger.info('train data \n%s' % str(train))
         logger.info('score data \n%s' % str(score))
 
-        # get config (when service exists)
-        config = None
+        # get config from request (if exists)
+        try:
+            config = Config(data['config'])
+        except KeyError:
+            config = Config()
 
         # collect notebook details
         module_path = data['notebook']

@@ -11,13 +11,22 @@ import logging
 logging.basicConfig(level="INFO")
 logger = logging.getLogger('Notebook')
 
-# Allow modules and files to be loaded with relative paths
+# Allow modules and files to be loaded with relative paths ...
 from pkg_resources import resource_filename
 import sys
 sys.path.append(resource_filename(__name__, ""))
+# ... or rather this way?
+# TODO - understand the best way to import development code
+import os
+module_path = os.path.abspath(os.path.join('..', '..'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
 
 # Set variable to remove functions that are not useful in production e.g. rendering images
 IN_JUPYTER = 'get_ipython' in globals() and get_ipython().__class__.__name__ == "ZMQInteractiveShell"
+
+# standard imports
+from pulse_dss.config import Config
 
 
 # In[ ]:
@@ -27,7 +36,7 @@ The execute function must be included in all notebooks that are to be run in pro
 This allows Jupyter Notebooks to implement an abstracted execute() function
 It returns a Pandas DataFrame
 """
-def execute(train, score, config=None):
+def execute(train, score, config=Config()):
     logger.info('Calling notebook execute ...')
     logger.debug('Training data = %s' % str(train))
     logger.debug('Scoring data = %s' % str(score))
@@ -75,6 +84,7 @@ if IN_JUPYTER:
     lookback = 30
     conf['lookback'] = lookback
     lookforward = 200
+    config = Config(conf)
     
     train_cols = ['observation', 'anomaly', 'median']
     train_data = [[np.random.normal(), None, None] for i in range(lookback)]
@@ -89,7 +99,7 @@ if IN_JUPYTER:
     for i in range(lookforward):
         this_train = train[i:lookback + i]
         this_score = score[i:i + 1]
-        result = execute(this_train, this_score, conf)
+        result = execute(this_train, this_score, config)
         train = train.append(result, ignore_index=True)
     
     print('final results: \n%s' % train)
